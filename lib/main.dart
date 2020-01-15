@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'theme.dart';
+import 'home.dart';
+import 'taskList.dart';
+import 'projectList.dart';
+import 'pageList.dart';
 
 void main() => runApp(MyApp());
 
@@ -7,154 +12,115 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return new MaterialApp(
       title: 'Generated App',
-      theme: new ThemeData(
-        primarySwatch: Colors.blue,
-        primaryColor: const Color(0xFF2196f3),
-        accentColor: const Color(0xFF2196f3),
-        canvasColor: const Color(0xFFfafafa),
-      ),
-      home: new MyHomePage(),
+      theme: myTheme,
+      home: MainLayout(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key}) : super(key: key);
+class MainLayout extends StatefulWidget {
+  MainLayout({Key key}) : super(key: key);
   @override
-  _MyHomePageState createState() => new _MyHomePageState();
+  _MainLayoutState createState() => new _MainLayoutState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MainLayoutState extends State<MainLayout> {
+  int _currentIndex = 0;
+  List _listPages = List();
+  List _listPagesTitle = List();
+  Widget _currentPage;
+  Text _currentPageTitle = null;
+
+  @override
+  void initState() {
+    super.initState();
+    _listPagesTitle
+      ..add(Text('Trang chủ'))
+      ..add(Text('Dự án'))
+      ..add(Text('Công việc'))
+      ..add(Text('Thông tin'));
+    _listPages
+      ..add(HomePage())
+      ..add(ProjectListPage())
+      ..add(TaskListPage())
+      ..add(PageList());
+    _currentPage = HomePage();
+
+  }
+
+  void _changePage(int selectedIndex) {
+    setState(() {
+      _currentIndex = selectedIndex;
+      _currentPage = _listPages[selectedIndex];
+      _currentPageTitle =_listPagesTitle[selectedIndex];
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: new AppBar(
-        title: new Text('Bảng tin'),
+        title: _currentPageTitle,
       ),
-      body: Center(
-        child: RaisedButton(
-            child: Text('Mở MySecondRoute'),
-            // Within the `FirstRoute` widget
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => MySecondRoute()),
-              );
-            }),
-      ),
-      drawer: new DrawerOnly(),
-      bottomNavigationBar: new BottomNavigationBarOnly(),
-    );
-  }
-}
-
-class BottomNavigationBarOnly extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return new BottomNavigationBar(items: [
-      new BottomNavigationBarItem(
-        icon: const Icon(Icons.home),
-        title: new Text('Bảng tin'),
-      ),
-      new BottomNavigationBarItem(
-        icon: const Icon(Icons.list),
-        title: new Text('Dự án'),
-      ),
-      new BottomNavigationBarItem(
-        icon: const Icon(Icons.playlist_play),
-        title: new Text('Công việc'),
-      )
-    ]);
-  }
-}
-
-class DrawerOnly extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return new Drawer(
-        child: new ListView(
-      children: <Widget>[
-        new DrawerHeader(
-          child: new Text("DRAWER HEADER.."),
-          decoration: new BoxDecoration(color: Colors.orange),
-        ),
-        new ListTile(
-          title: new Text("Item => 11"),
-          onTap: () {
-            Navigator.pop(context);
-            Navigator.push(context,
-                new MaterialPageRoute(builder: (context) => new MySecondRoute()));
-          },
-        ),
-        new ListTile(
-          title: new Text("Item => 22"),
-          onTap: () {
-            Navigator.pop(context);
-            Navigator.push(context,
-                new MaterialPageRoute(builder: (context) => new SecondPage()));
-          },
-        ),
-      ],
-    ));
-  }
-}
-
-
-class MySecondRoute extends StatefulWidget {
-  MySecondRoute({Key key}) : super(key: key);
-  @override
-  _MySecondRouteState createState() => new _MySecondRouteState();
-}
-
-class _MySecondRouteState extends State<MySecondRoute> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("My Second Route"),
-      ),
-      body: Center(
-        child: RaisedButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: Text('Go back!'),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: _currentPage,
         ),
       ),
-      drawer: new DrawerOnly(),
-      bottomNavigationBar: new BottomNavigationBarOnly(),
-    );
-  }
-}
-
-class FirstPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return new Scaffold(
-      drawer: new DrawerOnly(), // new Line
-      appBar: new AppBar(
-        title: new Text("First Page"),
+      drawer: new Drawer(
+          child: new ListView(
+        children: <Widget>[
+          new DrawerHeader(
+            child: new Text("wonder.vn"),
+            decoration: new BoxDecoration(color: Colors.blueGrey),
+          ),
+          new ListTile(
+            title: new Text("Nội quy công ty"),
+            onTap: () {
+              setState(() {
+                _currentIndex = 3;
+                _currentPage = PageList();
+                _currentPageTitle = Text("DỰ ÁN");
+              });
+              Navigator.of(context).pop();
+            },
+          ),
+          new ListTile(
+            title: new Text("Quy định KPI"),
+            onTap: () {
+              setState(() {
+                _currentIndex = 3;
+                _currentPage = PageList();
+                _currentPageTitle = Text("DỰ ÁN 2");
+              });
+              Navigator.of(context).pop();
+            },
+          )],
+          ),
       ),
-      body: new Text("I belongs to First Page"),
-    );
-  }
-}
-
-class SecondPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return new Scaffold(
-      drawer: new DrawerOnly(), // New Line
-      appBar: new AppBar(
-        title: new Text("Second Page"),
-      ),
-      body: Center(
-        child: RaisedButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: Text('Go back!'),
-        ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        type: BottomNavigationBarType.fixed,
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            title: Text('Home'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.list),
+            title: Text('Dự án'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.playlist_play),
+            title: Text('Công việc'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.streetview),
+            title: Text('Thông tin'),
+          ),
+        ],
+        onTap: (selectedIndex) => _changePage(selectedIndex),
       ),
     );
   }
